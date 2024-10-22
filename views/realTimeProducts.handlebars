@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Productos en Tiempo Real</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on('updateProducts', (productos) => {
+            const list = document.getElementById('product-list');
+            list.innerHTML = '';
+            productos.forEach((producto, index) => {
+                const item = document.createElement('li');
+                item.textContent = producto;
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Eliminar';
+                deleteButton.onclick = () => socket.emit('deleteProduct', index);
+                item.appendChild(deleteButton);
+                list.appendChild(item);
+            });
+        });
+
+        function addProduct() {
+            const productInput = document.getElementById('product-input');
+            const producto = productInput.value;
+            socket.emit('newProduct', producto);
+            productInput.value = '';
+        }
+    </script>
+</head>
+<body>
+    <h1>Lista de Productos en Tiempo Real</h1>
+    <input type="text" id="product-input" placeholder="Agregar producto">
+    <button onclick="addProduct()">Agregar</button>
+    <ul id="product-list"></ul>
+    <a href="/">Ir a Home</a>
+</body>
+</html>
